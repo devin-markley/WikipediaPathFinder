@@ -1,0 +1,22 @@
+Due date: December 15th
+Problem: Give any two wikipdeia web-page links find the most efficent ways to navigate between the two pages using only the embedded links.  
+What my program will need to do:
+	1)User enters wikipedia page link they want to start at
+	2)User enters wikipedia page they want end at
+	3)figure out how to get from start page to end page with as few enbedded links as possible
+		3a)Find all the embedded links on the start page
+		 
+		3b)Find all the embedded links on the end page
+		
+		3c)See if any links on the start page that link directly to the end page itself or a link that is on both the start page and the end page
+		
+			3c1)If there is a link on the start page that takes you to the end page use that link go to step 4
+			
+			3c2)If there is a link that is on both the start page and the end page use that link to begin the "search function"
+			
+			3c3)If there are no common links between the start and end page begin the "search fucntion" using all the links contained on all the pages linked by the start and end page 
+				
+	4)Display how many links it took and what pages we saw along the way
+	
+	Search Function:
+		Some sort of search tree looking for a common link between either the link given on step ec2 or the links given on step ec3
