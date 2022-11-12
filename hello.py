@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 startLink = input("Enter starting wikipedia link: ")
-#endLink = input("Enter ending wikipedia link: ")
+endLink = input("Enter ending wikipedia link: ")
 
 def link(link):
     resp = requests.get(link)
@@ -19,3 +19,4 @@ def link(link):
         print("error")
 
 link(startLink)
+link(endLink)
