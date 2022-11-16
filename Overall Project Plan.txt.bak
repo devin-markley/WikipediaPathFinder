@@ -26,8 +26,3 @@ Week 1 Due 11/18
 Accepting a start and end link in python 
 Scanning those two webpages for embedded links 
 Storing all of the embedded links in a usable data set
-
-https://www.geeksforgeeks.org/reading-selected-webpage-content-using-python-web-scraping/
-https://www.crummy.com/software/BeautifulSoup/bs4/doc/
-
-https://python.plainenglish.io/scraping-the-subpages-on-a-website-ea2d4e3db113
