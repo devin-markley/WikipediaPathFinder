@@ -1,20 +1,19 @@
 import requests
 from bs4 import BeautifulSoup
 
-startLink = input("Enter starting wikipedia link: ")
-endLink = input("Enter ending wikipedia link: ")
+startLink = "https://en.wikipedia.org/wiki/Coffee"
+endLink = "/wiki/Seattle"
 
-listLinks = []
-#TODO set a limit to depth
-#TODO if endlink is found function should exit the program
-def linkfinder(listLinks, link):
+def linkfinder(listLinks, webpageToSearch, parentList):
     #Connecting to the webpage
-    resp = requests.get(link)
+    #TODO Make sure Linkfinder doesn't search the same link twice
+    resp = requests.get(webpageToSearch)
     if resp.status_code == 200:
         print("Successfully opened the webpage")
         #Crawling through the webpage looking for links
         soup=BeautifulSoup(resp.text, 'html.parser')
         #Limiting the list to only links that lead to other wikipedia webpages
+        #TODO Limit links searched by linkfinder to a greater degree
         for link in soup.find_all('a', href=True):
             if str(link["href"]).startswith("/wiki/"):
                 newLink = link["href"]
@@ -24,16 +23,23 @@ def linkfinder(listLinks, link):
                     newLink = newLink[:indexOfHashtag]
                     if ':' in newLink:
                         continue
-                listLinks.append("https://en.wikipedia.org" + newLink)
-                #TODO Check if endlink is on page called by link
-                #if endLink in childernLinkList:
-                #print(f"A link too {endLink} is on the page {startLink}")
+                newParentList = [webpageToSearch] + parentList
+                if len(newParentList) < 3:
+                    listLinks.append(("https://en.wikipedia.org" + newLink, newParentList))
+                #TODO format endlink here
+                if (newLink == endLink):
+                    return True
     else:
         print("error")
+        
+    return False
 
-childernLinkList = []
-linkfinder(childernLinkList, startLink)
+explorationQueue = [(startLink, [])]
 
-    #for links in  childernLinkList:
-        #TODO find all links contained on childernLink pages
-        #TODO save them in an array named after there parent link
+while(explorationQueue):
+    #TODO Keeping track of depth
+    i = explorationQueue.pop(0)
+    if(linkfinder(explorationQueue, i[0], i[1])):
+        print("this was the path to the endlink" + " " + str(i[0])+ " " + str(i[1]))
+        break  
+quit()
