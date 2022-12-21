@@ -1,18 +1,21 @@
-import requests
 from bs4 import BeautifulSoup
+import grequests
+import time
 
-startLink = "https://en.wikipedia.org/wiki/Coffee"
-endLink = "/wiki/Seattle"
+startLink = "https://en.wikipedia.org/wiki/Latte"
+endLink = "/wiki/United"
 
-def linkfinder(listLinks, webpageToSearch, parentList):
+def asyncLinkFinder(listLinks, webpageToSearch, parentList):
     #Connecting to the webpage
     #TODO Make sure Linkfinder doesn't search the same link twice
-    resp = requests.get(webpageToSearch)
-    if resp.status_code == 200:
-        print("Successfully opened the webpage")
-        #Crawling through the webpage looking for links
-        soup=BeautifulSoup(resp.text, 'html.parser')
-        #Limiting the list to only links that lead to other wikipedia webpages
+    batches = 20
+    page = grequests.get(webpageToSearch)
+    response = grequests.map([page], size=batches)
+    for res in response:
+        try:
+            soup=BeautifulSoup(res.text, 'html.parser')
+        except AttributeError:
+            continue
         #TODO Limit links searched by linkfinder to a greater degree
         for link in soup.find_all('a', href=True):
             if str(link["href"]).startswith("/wiki/"):
@@ -21,25 +24,37 @@ def linkfinder(listLinks, webpageToSearch, parentList):
                     if '#' in newLink:
                         indexOfHashtag = newLink.find('#')
                     newLink = newLink[:indexOfHashtag]
-                    if ':' in newLink:
-                        continue
+                if ':' in newLink:
+                    continue
+                if 'Main_Page' in newLink:
+                    continue
+                if 'identifier' in newLink:
+                    continue
+                if "https://en.wikipedia.org" + newLink in alreadySearched or [item for item in listLinks if item[0] =="https://en.wikipedia.org" + newLink]:
+                    continue
                 newParentList = [webpageToSearch] + parentList
-                if len(newParentList) < 3:
-                    listLinks.append(("https://en.wikipedia.org" + newLink, newParentList))
-                #TODO format endlink here
+                if len(newParentList) < 5:
+                    print(newLink)
+                    listLinks.append(("https://en.wikipedia.org" + newLink, newParentList))    
+                else:
+                    print("Path could not be found")
+                    print(listLinks)
+                    quit()
                 if (newLink == endLink):
                     return True
-    else:
-        print("error")
-        
     return False
 
 explorationQueue = [(startLink, [])]
+alreadySearched = []
+startTime= time.time()
 
 while(explorationQueue):
-    #TODO Keeping track of depth
     i = explorationQueue.pop(0)
-    if(linkfinder(explorationQueue, i[0], i[1])):
+    if(asyncLinkFinder(explorationQueue, i[0], i[1])):
+        endTime = time.time()
+        elapsedTime = endTime - startTime
+        print(elapsedTime)
         print("this was the path to the endlink" + " " + str(i[0])+ " " + str(i[1]))
         break  
+    alreadySearched.append(i[0])
 quit()
