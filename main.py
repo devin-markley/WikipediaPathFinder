@@ -11,13 +11,12 @@ webpageLinkCollection = db["webpageLinks"]
 
 def storingEndlinkPaths(endLink, path, startLink):
     knownPathCollection.update_one({"key": endLink}, {"$set": {startLink: path}}, upsert= True)
-
-#TODO Change name for key
-def gettingEndLinkPaths(key, startLink):
-    cache_entry = knownPathCollection.find_one({"Path": key})
+    
+def gettingEndLinkPaths(endLinkKey, startLinkKey):
+    cache_entry = knownPathCollection.find_one({"Path": endLinkKey})
     if cache_entry is not None:
         try:
-            return cache_entry[startLink]
+            return cache_entry[startLinkKey]
         except KeyError:
             return None
     return None
@@ -90,9 +89,10 @@ explorationQueue = [(startLink, [])]
 alreadySearched = []
 startTime= time.time()
 
-data = gettingEndLinkPaths(endLink, startLink)
-if data is not None:
-    print(data)
+knownPath = gettingEndLinkPaths(endLink, startLink)
+if knownPath is not None:
+    print("This is a known path!")
+    print(knownPath)
 else:
     print("No known paths currently searching")
     while(explorationQueue):
